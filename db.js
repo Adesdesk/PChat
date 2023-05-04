@@ -1,25 +1,27 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://aadelakun28:<password>@nachral.0mlmvu0.mongodb.net/?retryWrites=true&w=majority";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+const { MongoClient, ServerApiVersion } = require('mongodb');
+require('dotenv').config();
+let access = process.env.DATABASE_ACCESS;
+
+let uri = "mongodb+srv://adesdeskUser01:" + access + "@adesdeskdatabase01.7znhfhj.mongodb.net/?retryWrites=true&w=majority";
+
+// Creating a MongoClient with a MongoClientOptions object to set Stable API version
+const client = new MongoClient(uri);
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    const db = client.db('sample_supplies');
+    const collection = db.collection('sales');
+
+    // Find the first document in the collection
+    const first = await collection.findOne();
+    console.log(first);
+    //const first = await db.deleteMany();
+    //console.log("deletion completed");
   } finally {
-    // Ensures that the client will close when finished/error
+    // Close the database connection when finished or if an error occurs
     await client.close();
   }
 }
-run().catch(console.dir);
+run().catch(console.error);
